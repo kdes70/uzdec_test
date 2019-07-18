@@ -3,6 +3,7 @@
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 
 use App\User;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Faker\Generator as Faker;
 
@@ -17,14 +18,15 @@ use Faker\Generator as Faker;
 |
 */
 
-$factory->define(User::class, function (Faker $faker) {
+$factory->define(\App\Section::class, function (Faker $faker) {
+    $filePath = storage_path('logo');
+
+    if (!File::exists($filePath)) {
+        File::makeDirectory($filePath);  //follow the declaration to see the complete signature
+    }
     return [
-        'name'              => $faker->name,
-        'email'             => $faker->unique()->safeEmail,
-        'email_verified_at' => now(),
-        'password'          => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
-        'remember_token'    => Str::random(10),
-        'state'             => User::STATE_ACTIVE,
-        'role'             => User::ROLE_USER,
+        'name' => $faker->name,
+        'description' => $faker->text(250),
+        'logo' => $faker->image($filePath, 400, 300, null, false)
     ];
 });
