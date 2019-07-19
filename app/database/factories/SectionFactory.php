@@ -19,11 +19,13 @@ use Faker\Generator as Faker;
 */
 
 $factory->define(\App\Section::class, function (Faker $faker) {
-    $filePath = storage_path('logo');
+
+    $filePath = storage_path('app/public/logo');
 
     if (!File::exists($filePath)) {
         File::makeDirectory($filePath);  //follow the declaration to see the complete signature
     }
+
     return [
         'name' => $faker->name,
         'description' => $faker->text(250),

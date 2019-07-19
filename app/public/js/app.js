@@ -49028,23 +49028,12 @@ window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-function deleteItem(mess, form) {
-  if (confirm(mess)) {
-    return document.getElementById(form).submit();
-  }
-
-  return false;
-}
-
 var app = new Vue({
-  el: '#app',
-  method: {// deleteItem(mess, form) {
-    //     if (confirm(mess)) {
-    //         return document.getElementById(form).submit()
-    //     }
-    //     return false;
-    // }
-  }
+  el: '#app'
+});
+$(".custom-file-input").on("change", function () {
+  var fileName = $(this).val().split("\\").pop();
+  $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
 });
 
 /***/ }),

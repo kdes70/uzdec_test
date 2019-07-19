@@ -29,8 +29,8 @@ class Section extends Model
         return $this->logo;
     }
 
-    public function getLogoAttribute()
+    public function getLogoUrlAttribute()
     {
-        return public_path('storage/logo/') . $this->getLogo();
+        return asset('storage/logo/'.  $this->getLogo());
     }
 }
