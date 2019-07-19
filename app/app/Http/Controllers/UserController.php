@@ -2,11 +2,31 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\User\Create;
+use App\Http\Requests\User\Update;
 use App\User;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
+
+    public function __construct()
+    {
+        /**
+         * Список состояний пользователя
+         *
+         * @var array
+         */
+        view()->share('roles', User::getRoleList());
+
+        /**
+         * Список ролей
+         *
+         * @var array
+         */
+        view()->share('statuses', User::getStatesList());
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -39,11 +59,7 @@ class UserController extends Controller
 
         $users = $query->paginate(4);
 
-        $statuses = User::getStatesList();
-
-        $roles = User::getRoleList();
-
-        return view('users.index', compact('users', 'statuses', 'roles'));
+        return view('users.index', compact('users'));
     }
 
     /**
@@ -53,64 +69,89 @@ class UserController extends Controller
      */
     public function create()
     {
-        $roles = User::getRoleList();
-
-        return view('users.create', compact('roles'));
+        return view('users.create');
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param Create $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Create $request)
     {
-        //
+        $user = User::create([
+            'name' => $request->get('name'),
+            'email' => $request->get('email'),
+            'password' => bcrypt($request->get('password')),
+            'role' => $request->get('role'),
+            'state' => $request->get('state'),
+        ]);
+
+        return redirect()->route('users.index', $user)->with('success',
+            'User ' . $user->name . ' has been created successfully!');;
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param User $user
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(User $user)
     {
-        //
+        return view('users.show', compact('user'));
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param User $user
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(User $user)
     {
-        //
+        return view('users.edit', compact('user'));
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param Update $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Update $request, $id)
     {
-        //
+
+        $user = User::find($id);
+
+        $user->update([
+            'name' => $request->get('name'),
+            'email' => $request->get('email'),
+            'password' => bcrypt($request->get('password')),
+            'role' => $request->get('role'),
+            'state' => $request->get('state'),
+        ]);
+
+        return redirect()->route('users.index')->with('success',
+            'User ' . $user->name . ' has been updated successfully!');;
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param User $user
      * @return \Illuminate\Http\Response
+     * @throws \Exception
      */
-    public function destroy($id)
+    public function destroy(User $user)
     {
-        //
+        if ($user->exists()) {
+            $user->delete();
+        }
+
+        return redirect()->route('users.index')->with('success',
+            'User ' . $user->name . ' has been deleted successfully!');
     }
 }
